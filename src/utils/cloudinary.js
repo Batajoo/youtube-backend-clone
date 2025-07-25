@@ -1,16 +1,18 @@
 import {v2 as cloudinary} from "cloudinary";
 import fs from "fs";
 
-const uploadImage = async (imagePath) => {
+const uploadFile = async (imagePath) => {
     try {
         // Upload the image
+
+        if (!imagePath) return null;
 
         cloudinary.config({
             cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
             api_key: process.env.CLOUDINARY_KEY,
             api_secret: process.env.CLOUDINARY_SECRET,
-            secure: true,
         });
+
         const result = await cloudinary.uploader.upload(imagePath, {
             resource_type: "auto",
         });
@@ -22,4 +24,4 @@ const uploadImage = async (imagePath) => {
     }
 };
 
-export {uploadImage};
+export {uploadFile};
