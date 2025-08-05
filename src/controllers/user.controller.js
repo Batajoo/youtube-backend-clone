@@ -378,8 +378,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
     //
-    const {username} = req.params.username;
-
+    const {username} = req.params;
     if (!username?.trim()) {
         throw new ApiError(400, "Error Invalid username");
     }
@@ -387,7 +386,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     const channel = await User.aggregate([
         {
             $match: {
-                username: username?.lowercase(),
+                username: username?.toLowerCase(),
             },
         },
         {
@@ -409,14 +408,14 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         {
             $addFields: {
                 subscriberCount: {
-                    $size: "subscribers",
+                    $size: "$subscribers",
                 },
                 channelSubscribedToCount: {
-                    $size: "subscribedTo",
+                    $size: "$subscribedTo",
                 },
                 isSubscribed: {
                     $cond: {
-                        $if: {$in: [req.user?._id, "subscribers.subscriber"]},
+                        if: {$in: [req.user?._id, "$subscribers.subscriber"]},
                         then: true,
                         else: false,
                     },
@@ -437,7 +436,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         },
     ]);
 
-    if (channel?.length) {
+    if (!channel?.length) {
         throw new ApiError(404, "Channel does not exist");
     }
 
@@ -452,7 +451,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     const user = await User.aggregate([
         {
             $match: {
-                _id: new mongoose.Schema.Types.ObjectId(req.user?._id),
+                _id: new mongoose.Types.ObjectId(req.user?._id),
             },
         },
         {
