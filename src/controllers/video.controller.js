@@ -5,7 +5,57 @@ import {Video} from "../models/video.model.js";
 import {uploadFile, deleteFile} from "../utils/cloudinary.js";
 import mongoose, {isValidObjectId} from "mongoose";
 
-const getAllVideo = asyncHandler(async (req, res) => {});
+const getAllVideo = asyncHandler(async (req, res) => {
+    const {page = 1, limit = 10, query, sortBy, sortType, userId} = req.query;
+
+    if ([query, sortBy, sortType, userId].some((val) => val?.trim() === "")) {
+        throw new ApiError(400, "Error: Required fields empty");
+    }
+
+    const pipeline = [
+        {
+            $match: {
+                $or: [
+                    {
+                        title: {
+                            $regex: query,
+                        },
+                    },
+                    {
+                        description: {
+                            $regex: query,
+                        },
+                    },
+                    {
+                        owner: userId,
+                    },
+                ],
+            },
+        },
+        {
+            $sort: {
+                sortBy: sortType === "asc" ? 1 : -1,
+            },
+        },
+    ];
+
+    const options = {
+        page,
+        limit,
+    };
+
+    const aggregate = Video.aggregate(pipeline);
+
+    const videos = await Video.aggregatePaginate(aggregate, options);
+
+    if (!videos) {
+        throw new ApiError(400, "Error: Unable to get videos from cloud");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, videos, "Videos fetched successfully"));
+});
 
 const publishVideo = asyncHandler(async (req, res) => {
     const {title, description} = req.body;
@@ -232,6 +282,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 });
 
 export {
+    getAllVideo,
     publishVideo,
     getVideoById,
     updateVideo,
