@@ -5,12 +5,10 @@ const likeSchema = new Schema(
         comment: {
             type: Schema.Types.ObjectId,
             ref: "Comment",
-            required: true,
         },
         video: {
             type: Schema.Types.ObjectId,
             ref: "Video",
-            required: true,
         },
         likedBy: {
             type: Schema.Types.ObjectId,
@@ -18,7 +16,7 @@ const likeSchema = new Schema(
         },
         tweet: {
             types: Schema.Types.ObjectId,
-            ref: "User",
+            ref: "Tweet",
         },
     },
     {
