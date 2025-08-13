@@ -31,6 +31,7 @@ import videoRouter from "./routes/video.route.js";
 import tweetRouter from "./routes/tweet.route.js";
 import healthCheckRouter from "./routes/healthcheck.route.js";
 import likeRouter from "./routes/like.route.js";
+import playlistRouter from "./routes/playlist.route.js";
 
 app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/user", userRouter);
@@ -39,5 +40,5 @@ app.use("/api/v1/comment", commentRouter);
 app.use("/api/v1/video", videoRouter);
 app.use("/api/v1/tweet", tweetRouter);
 app.use("/api/v1/like", likeRouter);
-
+app.use("/api/v1/playlist", playlistRouter);
 export {app};
